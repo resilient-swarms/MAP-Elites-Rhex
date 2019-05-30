@@ -11,6 +11,7 @@ sudo apt-get install libtinyxml-dev libtinyxml2-dev
 sudo apt-get install liburdfdom-dev liburdfdom-headers-dev
 
 mkdir ~/itev2
+mkdir ~/resibots
 
 cd ~/itev2
 git clone git://github.com/dartsim/dart.git
