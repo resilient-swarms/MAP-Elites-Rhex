@@ -104,10 +104,10 @@ sudo apt-get install libtbb-dev
     - You can add other options if you want, like: `--cpp14=yes` to force C++14 compilation
 - Compile sferes2 with: `./waf`
 - Create an experiment folder (if there's none) and cd to it: `mkdir exp && cd exp`
-- Clone map_elites_rhex_v2: `git clone https://github.com/rb10g16/rhex_sferes.git`
+- Clone map_elites_rhex_v2: `git clone https://github.com/AranBSmith/MAP-Elites-Rhex.git`
 - Go back to your `sferes2` root directory
-- Configure the experiment: `./waf configure --exp rhex_sferes`
-- Compile the experiment: `./waf --exp rhex_sferes`
+- Configure the experiment: `./waf configure --exp MAP-Elites-Rhex`
+- Compile the experiment: `./waf --exp MAP-Elites-Rhex`
 
 ```bash
 cd path/to/tmp/folder/
@@ -116,10 +116,10 @@ cd sferes2
 ./waf configure --cpp14=yes
 ./waf
 mkdir exp && cd exp
-git clone https://github.com/rb10g16/rhex_sferes.git
+git clone git clone https://github.com/AranBSmith/MAP-Elites-Rhex.git
 cd ..
-./waf configure --exp rhex_sferes --cpp14=yes
-./waf --exp rhex_sferes
+./waf configure --exp MAP-Elites-Rhex --cpp14=yes
+./waf --exp MAP-Elites-Rhex
 ```
 
 ## How to run
