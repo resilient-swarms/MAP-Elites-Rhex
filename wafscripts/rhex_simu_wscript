@@ -9,12 +9,6 @@ APPNAME = 'rhex_dart'
 srcdir = '.'
 blddir = 'build'
 
-from waflib.Build import BuildContext
-import dart
-import boost
-import eigen
-import rhex_controller
-
 
 def options(opt):
     opt.load('compiler_cxx')
