@@ -100,13 +100,13 @@ sudo apt-get install libtbb-dev
 - Get the map elites module: `git clone https://github.com/sferes2/map_elites.git`
   - Add `map_elites` to your modules.conf file in the sferes folder 
 - Go back to your `sferes` directory
-- Configure for compilation: `./waf configure`
+- Configure for compilation: `./waf configure --cpp14=yes`
     - You can add other options if you want, like: `--cpp14=yes` to force C++14 compilation
 - Compile sferes2 with: `./waf`
 - Create an experiment folder (if there's none) and cd to it: `mkdir exp && cd exp`
 - Clone map_elites_rhex_v2: `git clone https://github.com/AranBSmith/MAP-Elites-Rhex.git`
 - Go back to your `sferes2` root directory
-- Configure the experiment: `./waf configure --exp MAP-Elites-Rhex`
+- Configure the experiment: `./waf configure --exp MAP-Elites-Rhex --cpp14=yes` 
 - Compile the experiment: `./waf --exp MAP-Elites-Rhex`
 
 ```bash
@@ -130,7 +130,7 @@ cd ..
     - `./build/exp/map_elites_rhex_v2/hexa_duty_binary` for binary archives
 
 ## Aknowledgement
-[Roman Buckley MEng]
+[Roman Buckley MEng] For developing the Rhex skeleton, dart model, and controller. 
 
 ## Funding
 
