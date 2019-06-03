@@ -126,8 +126,8 @@ cd ..
 
 - Compile the experiment (as shown above)
 - Run it (assuming you are on sferes2 root dir and the `RESIBOTS_DIR` folder is set properly):
-    - `./build/exp/map_elites_rhex_v2/hexa_duty_text` for text archives
-    - `./build/exp/map_elites_rhex_v2/hexa_duty_binary` for binary archives
+    - `./build/exp/map_elites_rhex_v2/rhex_text` for text archives
+    - `./build/exp/map_elites_rhex_v2/rhex_binary` for binary archives
 
 ## Aknowledgement
 [Roman Buckley MEng] For developing the Rhex skeleton, dart model, and controller. 
