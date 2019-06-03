@@ -1,167 +1,207 @@
+#include <boost/random.hpp>
 #include <iostream>
-#include <sferes/phen/parameters.hpp>
-#include <iostream>
-#include <sferes/phen/parameters.hpp>
-#include <sferes/gen/evo_float.hpp>
-#include <sferes/ea/rank_simple.hpp>
-#include <sferes/eval/eval.hpp>
-#include <sferes/stat/best_fit.hpp>
-#include <sferes/stat/mean_fit.hpp>
-#include <sferes/modif/dummy.hpp>
-#include <sferes/run.hpp>
+#include <mutex>
 
+#include <sferes/gen/evo_float.hpp>
+#include <sferes/gen/sampled.hpp>
+#include <sferes/modif/dummy.hpp>
+#include <sferes/phen/parameters.hpp>
+#include <sferes/run.hpp>
+#include <sferes/stat/pareto_front.hpp>
+
+#include <modules/map_elites/fit_map.hpp>
+#include <modules/map_elites/map_elites.hpp>
+
+#ifdef BINARY
+#include <modules/map_elites/stat_map_binary.hpp>
+#else
+#include <modules/map_elites/stat_map.hpp>
+#endif
+
+#include <modules/map_elites/stat_progress.hpp>
 
 #include <rhex_dart/rhex_dart_simu.hpp>
 
+#ifdef GRAPHIC
+#define NO_PARALLEL
+#endif
 
-#include <dart/constraint/ConstraintSolver.hpp>
+#define NO_MPI
 
+#ifndef NO_PARALLEL
+#include <sferes/eval/parallel.hpp>
+#ifndef NO_MPI
+#include <sferes/eval/mpi.hpp>
+#endif
+#else
+#include <sferes/eval/eval.hpp>
+#endif
 
 using namespace sferes;
 using namespace sferes::gen::evo_float;
 
 struct Params {
-  struct evo_float {
-    // we choose the polynomial mutation type
-    SFERES_CONST mutation_t mutation_type = polynomial;
-    // we choose the polynomial cross-over type
-    SFERES_CONST cross_over_t cross_over_type = sbx;
-    // the mutation rate of the real-valued vector
-    SFERES_CONST float mutation_rate = 0.1f;
-    // the cross rate of the real-valued vector
-    SFERES_CONST float cross_rate = 0.5f;
-    // a parameter of the polynomial mutation
-    SFERES_CONST float eta_m = 15.0f;
-    // a parameter of the polynomial cross-over
-    SFERES_CONST float eta_c = 10.0f;
-  };
-  struct pop {
-    // size of the population
-    SFERES_CONST unsigned size = 20;
-    // number of generations
-    SFERES_CONST unsigned nb_gen = 10000;
-    // how often should the result file be written (here, each 5
-    // generation)
-    SFERES_CONST int dump_period = 100;
-    // how many individuals should be created during the random
-    // generation process?
-    SFERES_CONST int initial_aleat = 3;
-    // used by RankSimple to select the pressure
-    SFERES_CONST float coeff = 1.1f;
-    // the number of individuals that are kept from on generation to
-    // another (elitism)
-    SFERES_CONST float keep_rate = 0.6f;
-  };
-  struct parameters {
-    // maximum value of parameters
-    SFERES_CONST float min = 0.0f;
-    // minimum value
-    SFERES_CONST float max = 1.0f;
-  };
+    struct surrogate {
+        SFERES_CONST int nb_transf_max = 10;
+        SFERES_CONST float tau_div = 0.05f;
+    };
+
+    struct ea {
+        SFERES_CONST size_t behav_dim = 6;
+        SFERES_ARRAY(size_t, behav_shape, 5, 5, 5, 5, 5, 5);
+        SFERES_CONST float epsilon = 0.05;
+    };
+
+    struct sampled {
+        SFERES_ARRAY(float, values, 0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35,
+        0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85,
+        0.90, 0.95, 1);
+        SFERES_CONST float mutation_rate = 0.05f;
+        SFERES_CONST float cross_rate = 0.00f;
+        SFERES_CONST bool ordered = false;
+    };
+    struct evo_float {
+        SFERES_CONST float cross_rate = 0.0f;
+        SFERES_CONST float mutation_rate = 1.0f / 36.0f;
+        SFERES_CONST float eta_m = 10.0f;
+        SFERES_CONST float eta_c = 10.0f;
+        SFERES_CONST mutation_t mutation_type = polynomial;
+        SFERES_CONST cross_over_t cross_over_type = sbx;
+    };
+    struct pop {
+        SFERES_CONST unsigned size = 200;
+        SFERES_CONST unsigned init_size = 200;
+        SFERES_CONST unsigned nb_gen = 100001;
+        SFERES_CONST int dump_period = 50;
+        SFERES_CONST int initial_aleat = 1;
+    };
+    struct parameters {
+        SFERES_CONST float min = 0.0f;
+        SFERES_CONST float max = 1.0f;
+    };
 };
 
-namespace global {
-    std::shared_ptr<rhex_dart::Rhex> global_robot;
-}; // 
-
-void init_simu(std::string robot_file)
+namespace global
 {
-    std::vector<rhex_dart::RhexDamage> brk = {};
-    auto global_robot = std::make_shared<rhex_dart::Rhex>(robot_file,"Rhex",false,brk);
+    std::shared_ptr<rhex_dart::Rhex> global_robot;
+    std::vector<rhex_dart::RhexDamage> damages;
+}; // namespace global
 
-
+// void init_simu(std::string robot_file, std::vector<hexapod_dart::HexapodDamage> damages = std::vector<hexapod_dart::HexapodDamage>())
+void init_simu(std::string robot_file, std::vector<rhex_dart::RhexDamage> damages = std::vector<rhex_dart::RhexDamage>())
+{
+    // global::global_robot = std::make_shared<hexapod_dart::Hexapod>(robot_file, damages);
+    // auto global_robot = std::make_shared<rhex_dart::Rhex>(robot_file, "Rhex", false, damages);
+    global::global_robot = std::make_shared<rhex_dart::Rhex>(robot_file, "Rhex", false, damages);
 }
 
-SFERES_FITNESS(FitTest, sferes::fit::Fitness) {
-protected:
-    std::vector<double> _ctrl;
-public:
-  // indiv will have the type defined in the main (phen_t)
-  template<typename Indiv>
-  void eval(const Indiv& ind) {
-    _ctrl.clear();
-    //double sum=0;
-    double interim;
-    for (size_t i = 0; i < 48; i++){
-      if(i<8){
-      	interim = ind.data(i);
-      	//sum += interim;
-      	if(i>4){
-      		_ctrl.push_back(interim*10);
-      	}else{
-        	_ctrl.push_back(interim);
-        }
-      }else{
-        _ctrl.push_back(0);
-      }
-    }
-    std::vector<rhex_dart::RhexDamage> brk = {};
-    auto robot = std::make_shared<rhex_dart::Rhex>(std::string(std::getenv("RESIBOTS_DIR")) + "/share/hexapod_models/URDF/RHex8.skel","Rhex",false,brk);
+FIT_MAP(FitAdapt)
+        {
+                public:
+                template <typename Indiv>
+                void eval(Indiv & indiv)
+                {
 
-    //auto robot = global::global_robot->clone();
-    using desc_t = boost::fusion::vector<rhex_dart::descriptors::DutyCycle, rhex_dart::descriptors::BodyOrientation>;
-    using viz_t = boost::fusion::vector<rhex_dart::visualizations::HeadingArrow, rhex_dart::visualizations::PointingArrow<Params>>;
+                    this->_objs.resize(2);
+                    std::fill(this->_objs.begin(), this->_objs.end(), 0);
+                    this->_dead = false;
+                    _eval(indiv);
+                }
 
-    rhex_dart::RhexDARTSimu<rhex_dart::desc<desc_t>, rhex_dart::viz<viz_t>> simu(_ctrl, robot);
+                template <class Archive>
+                void serialize(Archive & ar, const unsigned int version)
+                {
+                    dbg::trace trace("fit", DBG_HERE);
 
-    simu.run(10);
+                    ar& boost::serialization::make_nvp("_value", this->_value);
+                    ar& boost::serialization::make_nvp("_objs", this->_objs);
+                }
 
-    this->_value = simu.covered_distance();//*simu.body_avg_height(); 
-  }
+                bool dead() { return _dead; }
+                std::vector<double> ctrl() { return _ctrl; }
 
+                protected:
+                bool _dead;
+                std::vector<double> _ctrl;
 
-};
+                template <typename Indiv>
+                void _eval(Indiv & indiv)
+                {
+                    // copy of controler's parameters
+                    _ctrl.clear();
+                    for (size_t i = 0; i < 36; i++)
+                        _ctrl.push_back(indiv.data(i));
+                    // launching the simulation
+                    auto robot = global::global_robot->clone();
+                    using safe_t = boost::fusion::vector<rhex_dart::safety_measures::BodyColliding, rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
+                    rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>> simu(_ctrl, robot);
+                    simu.run(5);
 
+                    this->_value = simu.covered_distance();
 
+                    std::vector<float> desc;
 
-int main(int argc, char **argv) {
-  // Our fitness is the class FitTest (see above), that we will call
-  // fit_t. Params is the set of parameters (struct Params) defined in
-  // this file.
-  typedef FitTest<Params> fit_t;
-  // We define the genotype. Here we choose EvoFloat (real
-  // numbers). We evolve 8 real numbers, with the params defined in
-  // Params (cf the beginning of this file)
-  typedef gen::EvoFloat<9, Params> gen_t;
-  // This genotype should be simply transformed into a vector of
-  // parameters (phen::Parameters). The genotype could also have been
-  // transformed into a shape, a neural network... The phenotype need
-  // to know which fitness to use; we pass fit_t.
-  typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
-  // The evaluator is in charge of distributing the evaluation of the
-  // population. It can be simple eval::Eval (nothing special),
-  // parallel (for multicore machines, eval::Parallel) or distributed
-  // (for clusters, eval::Mpi).
-  typedef eval::Eval<Params> eval_t;
-  // Statistics gather data about the evolutionary process (mean
-  // fitness, Pareto front, ...). Since they can also stores the best
-  // individuals, they are the container of our results. We can add as
-  // many statistics as required thanks to the boost::fusion::vector.
-  // we need sferes:: because of a name clash with the C function stat()...
-  typedef boost::fusion::vector<stat::BestFit<phen_t, Params>,
-          stat::MeanFit<Params> >  stat_t;
-  // Modifiers are functors that are run once all individuals have
-  // been evalutated. Their typical use is to add some evolutionary
-  // pressures towards diversity (e.g. fitness sharing). Here we don't
-  // use this feature. As a consequence we use a "dummy" modifier that
-  // does nothing.
-  typedef modif::Dummy<> modifier_t;
-  // We can finally put everything together. RankSimple is the
-  // evolutianary algorithm. It is parametrized by the phenotype, the
-  // evaluator, the statistics list, the modifier and the general params.
-  typedef ea::RankSimple<phen_t, eval_t, stat_t, modifier_t, Params> ea_t;
-  // We now have a special class for our experiment: ea_t. The next
-  // line instantiate an object of this class
-  ea_t ea;
-  // we can now process the comannd line options an run the
-  // evolutionary algorithm (if a --load argument is passed, the file
-  // is loaded; otherwise, the algorithm is launched).
-  //init_simu(std::string("RHex8.skel"));
+                    if (this->_value < -1000) {
+                        // this means that something bad happened in the simulation
+                        // we kill this individual
+                        this->_dead = true;
+                        desc.resize(6);
+                        desc[0] = 0;
+                        desc[1] = 0;
+                        desc[2] = 0;
+                        desc[3] = 0;
+                        desc[4] = 0;
+                        desc[5] = 0;
+                        this->_value = -1000;
+                    }
+                    else {
+                        desc.resize(6);
+                        std::vector<double> v;
+                        simu.get_descriptor<rhex_dart::descriptors::DutyCycle>(v);
+                        desc[0] = v[0];
+                        desc[1] = v[1];
+                        desc[2] = v[2];
+                        desc[3] = v[3];
+                        desc[4] = v[4];
+                        desc[5] = v[5];
+                    }
 
- // init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/hexapod_models/URDF/RHex8.skel");  
+                    this->set_desc(desc);
+                }
+        };
 
+int main(int argc, char** argv)
+{
+#ifndef NO_PARALLEL
+#ifndef NO_MPI
+    typedef eval::Mpi<Params> eval_t;
+#else
+    typedef eval::Parallel<Params> eval_t;
+#endif
+#else
+    typedef eval::Eval<Params> eval_t;
+#endif
 
-  run_ea(argc, argv, ea, fit_t());//fit_t() is optionnal
+    typedef gen::Sampled<36, Params> gen_t;
+    typedef FitAdapt<Params> fit_t;
+    typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
 
-  return 0;
+#ifdef BINARY
+    typedef sferes::stat::MapBinary<phen_t, Params> map_stat_t;
+#else
+    typedef sferes::stat::Map<phen_t, Params> map_stat_t;
+#endif
+
+    typedef boost::fusion::vector<map_stat_t, sferes::stat::MapProgress<phen_t, Params>> stat_t;
+    typedef modif::Dummy<> modifier_t;
+    typedef ea::MapElites<phen_t, eval_t, stat_t, modifier_t, Params> ea_t;
+
+    ea_t ea;
+
+    // initilisation of the simulation and the simulated robot
+    init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/hexapod_models/URDF/RHex8.skel", global::damages);
+    run_ea(argc, argv, ea);
+
+    global::global_robot.reset();
+    return 0;
 }
