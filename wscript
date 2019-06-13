@@ -25,7 +25,7 @@ def build(bld):
                            use = 'sferes2',
                            uselib = libs,
                            target = 'rhex',
-                           cxxflags = cxxflags, #+ ['-march=native'],
+                           cxxflags = cxxflags + ['-march=native'],
                            variants = ['TEXT', 'BINARY'])
 
     # if bld.get_env()['BUILD_GRAPHIC'] == True:

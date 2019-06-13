@@ -197,9 +197,8 @@ int main(int argc, char** argv)
     typedef ea::MapElites<phen_t, eval_t, stat_t, modifier_t, Params> ea_t;
 
     ea_t ea;
-
     // initilisation of the simulation and the simulated robot
-    init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/hexapod_models/URDF/RHex8.skel", global::damages);
+    init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/URDF/RHex8.skel", global::damages);
     run_ea(argc, argv, ea);
 
     global::global_robot.reset();
