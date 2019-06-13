@@ -24,6 +24,7 @@ sudo apt-get update
 sudo apt-get install build-essential cmake pkg-config git
 sudo apt-get install libeigen3-dev libassimp-dev libccd-dev libfcl-dev libboost-regex-dev libboost-system-dev libode-dev
 sudo apt-get install libopenscenegraph-dev
+sudo apt-get install freeglut3-dev
 
 sudo apt-get install libtinyxml-dev libtinyxml2-dev
 sudo apt-get install liburdfdom-dev liburdfdom-headers-dev
