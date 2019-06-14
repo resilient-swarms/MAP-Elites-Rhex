@@ -16,8 +16,8 @@ From now on, we assume that the `RESIBOTS_DIR` variable is set.
 To simulate our rhex we are using the [DART] simulator. To install use the following procedure:
 
 ```bash
-sudo apt-add-repository ppa:libccd-debs/ppa
-sudo apt-add-repository ppa:fcl-debs/ppa
+sudo apt-add-repository ppa:libccd-debs/ppa # for ubuntu versions < 16
+sudo apt-add-repository ppa:fcl-debs/ppa    # for ubuntu versions < 16
 sudo apt-add-repository ppa:dartsim/ppa
 sudo apt-get update
 
