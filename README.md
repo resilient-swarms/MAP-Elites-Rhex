@@ -76,6 +76,7 @@ cd rhex_simu/rhex_dart
 
 ```bash
 sudo apt-get update
+sudo apt-get install libboost-all-dev
 sudo apt-get install libeigen3-dev libboost-serialization-dev libboost-filesystem-dev libboost-test-dev libboost-program-options-dev libboost-thread-dev libboost-regex-dev libboost-graph-dev
 sudo apt-get install libtbb-dev
 ```
