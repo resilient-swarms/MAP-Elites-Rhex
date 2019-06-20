@@ -1,11 +1,19 @@
 # MAP-Elites Rhex Experiments
 ### Dependencies
+
+#### Ubuntu 16.04 
+This guide was tested on 16.04, and is found to throw less problems than version 18. You may encounter other issues in using version 18.
+
+#### GCC
+Recommend using gcc/gpp version 5 for convenience sake. See the following guide for installing and switching compilers: http://tuxamito.com/wiki/index.php/Installing_newer_GCC_versions_in_Ubuntu
+
 #### Setting up the ResiBots environment
 
-We use the environmental `RESIBOTS_DIR` variable for easy configuration and library finding (it basically points to one folder where every local installation happens that is related to the project). Thus, before installing/compiling anything, make sure that you add this line to your `~/.bashrc` or `~/.zshrc` file:
+We use the environmental `RESIBOTS_DIR` variable for easy configuration and library finding (it basically points to one folder where every local installation happens that is related to the project). Thus, before installing/compiling anything, make sure that you add this line to your
+`~/.bashrc` or `~/.zshrc` file:
 
 ```bash
-export RESIBOTS_DIR=/path/to/installation/folder
+export RESIBOTS_DIR=/path/to/installation/folder 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib:/usr/lib:/usr/local/lib
 ```
 
