@@ -94,7 +94,7 @@ sudo apt-get install libtbb-dev
 - Get [Sferes2]: `git clone https://github.com/sferes2/sferes2.git`
 - Go to your `sferes2` root directory
 - Go to the modules folder: `cd modules`
-- Get the map elites module: `git clone https://github.com/sferes2/map_elites.git`
+- Get the map elites module: `git clone https://github.com/resilient-swarms/map_elites.git`
   - Add `map_elites` to your modules.conf file in the sferes folder 
 - Go back to your `sferes` directory
 - Configure for compilation: `./waf configure`
