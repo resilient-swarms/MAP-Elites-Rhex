@@ -41,17 +41,21 @@ using namespace sferes;
 using namespace sferes::gen::evo_float;
 
 struct Params {
+
+    // not too sure about this one
     struct surrogate {
         SFERES_CONST int nb_transf_max = 10;
         SFERES_CONST float tau_div = 0.05f;
     };
 
+    // grid properties
     struct ea {
         SFERES_CONST size_t behav_dim = 6;
         SFERES_ARRAY(size_t, behav_shape, 5, 5, 5, 5, 5, 5);
         SFERES_CONST float epsilon = 0.05;
     };
 
+    // not too sure about this one
     struct sampled {
         SFERES_ARRAY(float, values, 0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35,
         0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85,
@@ -60,14 +64,18 @@ struct Params {
         SFERES_CONST float cross_rate = 0.00f;
         SFERES_CONST bool ordered = false;
     };
+
+    // 0 cross rate?
     struct evo_float {
         SFERES_CONST float cross_rate = 0.0f;
-        SFERES_CONST float mutation_rate = 1.0f / 36.0f;
+        SFERES_CONST float mutation_rate = 1.0f / 36.0f; // is 36 related to controller length? then 48 in rhex case.
         SFERES_CONST float eta_m = 10.0f;
         SFERES_CONST float eta_c = 10.0f;
         SFERES_CONST mutation_t mutation_type = polynomial;
         SFERES_CONST cross_over_t cross_over_type = sbx;
     };
+
+    // population large enough? save map every 50
     struct pop {
         SFERES_CONST unsigned size = 200;
         SFERES_CONST unsigned init_size = 200;
@@ -75,6 +83,8 @@ struct Params {
         SFERES_CONST int dump_period = 50;
         SFERES_CONST int initial_aleat = 1;
     };
+
+    // parameter limits between 0 and 1
     struct parameters {
         SFERES_CONST float min = 0.0f;
         SFERES_CONST float max = 1.0f;
@@ -87,11 +97,8 @@ namespace global
     std::vector<rhex_dart::RhexDamage> damages;
 }; // namespace global
 
-// void init_simu(std::string robot_file, std::vector<hexapod_dart::HexapodDamage> damages = std::vector<hexapod_dart::HexapodDamage>())
 void init_simu(std::string robot_file, std::vector<rhex_dart::RhexDamage> damages = std::vector<rhex_dart::RhexDamage>())
 {
-    // global::global_robot = std::make_shared<hexapod_dart::Hexapod>(robot_file, damages);
-    // auto global_robot = std::make_shared<rhex_dart::Rhex>(robot_file, "Rhex", false, damages);
     global::global_robot = std::make_shared<rhex_dart::Rhex>(robot_file, "Rhex", false, damages);
 }
 
@@ -124,18 +131,22 @@ FIT_MAP(FitAdapt)
                 bool _dead;
                 std::vector<double> _ctrl;
 
+                // descriptor work done here, in this case duty cycle
                 template <typename Indiv>
                 void _eval(Indiv & indiv)
                 {
-                    // copy of controler's parameters
+                    // copy of controller's parameters
                     _ctrl.clear();
-                    for (size_t i = 0; i < 36; i++)
+
+                    // TODO
+                    for (size_t i = 0; i < 48; i++)
                         _ctrl.push_back(indiv.data(i));
+
                     // launching the simulation
                     auto robot = global::global_robot->clone();
                     using safe_t = boost::fusion::vector<rhex_dart::safety_measures::BodyColliding, rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
                     rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>> simu(_ctrl, robot);
-                    simu.run(5);
+                    simu.run(5); // increase time to obtain more stable gaits?
 
                     this->_value = simu.covered_distance();
 
@@ -181,8 +192,7 @@ int main(int argc, char** argv)
 #else
     typedef eval::Eval<Params> eval_t;
 #endif
-
-    typedef gen::Sampled<36, Params> gen_t;
+    typedef gen::Sampled<48, Params> gen_t;
     typedef FitAdapt<Params> fit_t;
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
 
@@ -198,7 +208,10 @@ int main(int argc, char** argv)
 
     ea_t ea;
     // initilisation of the simulation and the simulated robot
-    init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/URDF/RHex8.skel", global::damages);
+    init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/SKEL/RHex8.skel", global::damages);
+    // init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/SKEL/skinny.skel", global::damages);
+    // init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/SKEL/raised.skel", global::damages);
+
     run_ea(argc, argv, ea);
 
     global::global_robot.reset();
