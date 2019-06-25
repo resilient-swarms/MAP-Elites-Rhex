@@ -1,11 +1,19 @@
 # MAP-Elites Rhex Experiments
 ### Dependencies
+
+#### Ubuntu 16.04 
+This guide was tested on 16.04, and is found to throw less problems than version 18. You may encounter other issues in using version 18.
+
+#### GCC
+Recommend using gcc/gpp version 5 for convenience sake. See the following guide for installing and switching compilers: http://tuxamito.com/wiki/index.php/Installing_newer_GCC_versions_in_Ubuntu
+
 #### Setting up the ResiBots environment
 
-We use the environmental `RESIBOTS_DIR` variable for easy configuration and library finding (it basically points to one folder where every local installation happens that is related to the project). Thus, before installing/compiling anything, make sure that you add this line to your `~/.bashrc` or `~/.zshrc` file:
+We use the environmental `RESIBOTS_DIR` variable for easy configuration and library finding (it basically points to one folder where every local installation happens that is related to the project). Thus, before installing/compiling anything, make sure that you add this line to your
+`~/.bashrc` or `~/.zshrc` file:
 
 ```bash
-export RESIBOTS_DIR=/path/to/installation/folder
+export RESIBOTS_DIR=/path/to/installation/folder 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib:/usr/lib:/usr/local/lib
 ```
 
@@ -16,18 +24,20 @@ From now on, we assume that the `RESIBOTS_DIR` variable is set.
 To simulate our rhex we are using the [DART] simulator. To install use the following procedure:
 
 ```bash
-sudo apt-add-repository ppa:libccd-debs/ppa
-sudo apt-add-repository ppa:fcl-debs/ppa
+sudo apt-add-repository ppa:libccd-debs/ppa # for ubuntu versions < 16
+sudo apt-add-repository ppa:fcl-debs/ppa    # for ubuntu versions < 16
 sudo apt-add-repository ppa:dartsim/ppa
 sudo apt-get update
 
 sudo apt-get install build-essential cmake pkg-config git
 sudo apt-get install libeigen3-dev libassimp-dev libccd-dev libfcl-dev libboost-regex-dev libboost-system-dev libode-dev
 sudo apt-get install libopenscenegraph-dev
+sudo apt-get install libxmu-dev libxi-dev
 sudo apt-get install freeglut3-dev
 
 sudo apt-get install libtinyxml-dev libtinyxml2-dev
 sudo apt-get install liburdfdom-dev liburdfdom-headers-dev
+
 
 cd /path/to/tmp/folder
 git clone git://github.com/dartsim/dart.git
@@ -74,6 +84,7 @@ cd rhex_simu/rhex_dart
 
 ```bash
 sudo apt-get update
+sudo apt-get install libboost-all-dev
 sudo apt-get install libeigen3-dev libboost-serialization-dev libboost-filesystem-dev libboost-test-dev libboost-program-options-dev libboost-thread-dev libboost-regex-dev libboost-graph-dev
 sudo apt-get install libtbb-dev
 ```
@@ -83,7 +94,7 @@ sudo apt-get install libtbb-dev
 - Get [Sferes2]: `git clone https://github.com/sferes2/sferes2.git`
 - Go to your `sferes2` root directory
 - Go to the modules folder: `cd modules`
-- Get the map elites module: `git clone https://github.com/sferes2/map_elites.git`
+- Get the map elites module: `git clone https://github.com/resilient-swarms/map_elites.git`
   - Add `map_elites` to your modules.conf file in the sferes folder 
 - Go back to your `sferes` directory
 - Configure for compilation: `./waf configure`
