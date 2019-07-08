@@ -51,7 +51,9 @@ def check_rhex_dart(conf):
     try:
     	conf.start_msg('Checking for rhex_dart includes')
     	res = conf.find_file('rhex_dart/rhex.hpp', includes_check)
-    	res = res and conf.find_file('rhex_dart/rhex_control.hpp', includes_check)
+    	res = res and conf.find_file('rhex_dart/rhex_control_roman.hpp', includes_check)
+    	res = res and conf.find_file('rhex_dart/rhex_control_hopf.hpp', includes_check)
+    	res = res and conf.find_file('rhex_dart/rhex_control_cpg.hpp', includes_check)
     	res = res and conf.find_file('rhex_dart/rhex_dart_simu.hpp', includes_check)
     	res = res and conf.find_file('rhex_dart/descriptors.hpp', includes_check)
     	res = res and conf.find_file('rhex_dart/safety_measures.hpp', includes_check)

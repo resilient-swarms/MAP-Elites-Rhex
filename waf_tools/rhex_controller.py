@@ -25,7 +25,7 @@ def check_rhex_controller(conf):
 
     try:
         conf.start_msg('Checking for rhex_controller includes')
-        res = conf.find_file('rhex_controller/rhex_controller_simple.hpp', includes_check)
+        res = conf.find_file('rhex_controller/rhex_controller_hopf.hpp', includes_check)
         conf.end_msg('ok')
         conf.env.INCLUDES_HEXAPOD_CONTROLLER = includes_check
     except:
