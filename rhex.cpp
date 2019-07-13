@@ -23,7 +23,7 @@
 #include <rhex_dart/rhex_dart_simu.hpp>
 
 #ifdef GRAPHIC
-#define NO_PARALLEL
+// #define NO_PARALLEL
 #endif
 
 #define NO_MPI
@@ -74,7 +74,7 @@ struct Params {
         SFERES_CONST mutation_t mutation_type = polynomial;
         SFERES_CONST cross_over_t cross_over_type = sbx;
     };
-
+//
     // population large enough? save map every 50
     struct pop {
         SFERES_CONST unsigned size = 200;
@@ -139,14 +139,14 @@ FIT_MAP(FitAdapt)
                     _ctrl.clear();
 
                     // TODO
-                    for (size_t i = 0; i < 13; i++)
+                    for (size_t i = 0; i < 12; i++)
                         _ctrl.push_back(indiv.data(i));
 
                     // launching the simulation
                     auto robot = global::global_robot->clone();
                     using safe_t = boost::fusion::vector<rhex_dart::safety_measures::BodyColliding, rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
                     rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>> simu(_ctrl, robot);
-                    simu.run(7); // increase time to obtain more stable gaits?
+                    simu.run(5); // increase time to obtain more stable gaits?
 
                     this->_value = simu.covered_distance();
 
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 #else
     typedef eval::Eval<Params> eval_t;
 #endif
-    typedef gen::Sampled<13, Params> gen_t;
+    typedef gen::Sampled<12, Params> gen_t;
     typedef FitAdapt<Params> fit_t;
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
 
