@@ -128,7 +128,7 @@ FIT_MAP(FitAdapt)
                     _ctrl.clear();
 
                     // TODO
-                    for (size_t i = 0; i < 27; i++)
+                    for (size_t i = 0; i < 26; i++)
                         _ctrl.push_back(indiv.data(i));
 
                     // launching the simulation
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
 #else
     typedef eval::Eval<Params> eval_t;
 #endif
-    typedef gen::Sampled<27, Params> gen_t;
+    typedef gen::Sampled<26, Params> gen_t;
     typedef FitAdapt<Params> fit_t;
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
 
