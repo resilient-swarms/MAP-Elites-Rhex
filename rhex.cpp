@@ -69,7 +69,7 @@ struct Params {
         SFERES_CONST unsigned size = 200;
         SFERES_CONST unsigned init_size = 200;
         SFERES_CONST unsigned nb_gen = 100001;
-        SFERES_CONST int dump_period = 1;
+        SFERES_CONST int dump_period = 25;
         SFERES_CONST int initial_aleat = 1;
     };
 
