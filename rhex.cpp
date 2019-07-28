@@ -46,8 +46,8 @@ struct Params {
 
     // grid properties
     struct ea {
-        SFERES_CONST size_t behav_dim = 6;
-        SFERES_ARRAY(size_t, behav_shape, 5, 5, 5, 5, 5, 5);
+        SFERES_CONST size_t behav_dim = 5;
+        SFERES_ARRAY(size_t, behav_shape, 5, 5, 5, 5, 5);
         SFERES_CONST float epsilon = 0.05;
     };
 
@@ -69,7 +69,7 @@ struct Params {
         SFERES_CONST unsigned size = 200;
         SFERES_CONST unsigned init_size = 200;
         SFERES_CONST unsigned nb_gen = 100001;
-        SFERES_CONST int dump_period = 50;
+        SFERES_CONST int dump_period = 1;
         SFERES_CONST int initial_aleat = 1;
     };
 
@@ -144,25 +144,23 @@ FIT_MAP(FitAdapt)
                         // this means that something bad happened in the simulation
                         // we kill this individual
                         this->_dead = true;
-                        desc.resize(6);
+                        desc.resize(5);
                         desc[0] = 0;
                         desc[1] = 0;
                         desc[2] = 0;
                         desc[3] = 0;
                         desc[4] = 0;
-                        desc[5] = 0;
                         this->_value = -1000;
                     }
                     else {
-                        desc.resize(6);
+                        desc.resize(5);
                         std::vector<double> v;
-                        simu.get_descriptor<rhex_dart::descriptors::DutyCycle>(v);
+                        simu.get_descriptor<rhex_dart::descriptors::ControlPhase>(v);
                         desc[0] = v[0];
                         desc[1] = v[1];
                         desc[2] = v[2];
                         desc[3] = v[3];
                         desc[4] = v[4];
-                        desc[5] = v[5];
                     }
 
                     this->set_desc(desc);
