@@ -37,8 +37,6 @@
 #include <sferes/eval/eval.hpp>
 #endif
 
-#define FRICTION 1.0
-
 using namespace sferes;
 using namespace sferes::gen::evo_float;
 
@@ -133,7 +131,7 @@ FIT_MAP(FitAdapt)
                     // launching the simulation
                     auto robot = global::global_robot->clone();
                     using safe_t = boost::fusion::vector<rhex_dart::safety_measures::BodyColliding, rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
-                    rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>> simu(_ctrl, robot, FRICTION);
+                    rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>> simu(_ctrl, robot);
                     simu.run(5); // increase time to obtain more stable gaits?
 
                     this->_value = simu.covered_distance();
