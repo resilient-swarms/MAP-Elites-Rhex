@@ -37,8 +37,6 @@
 #include <sferes/eval/eval.hpp>
 #endif
 
-#define FRICTION 1.0
-
 using namespace sferes;
 using namespace sferes::gen::evo_float;
 
@@ -120,7 +118,7 @@ FIT_MAP(FitAdapt)
                 bool _dead;
                 std::vector<double> _ctrl;
 
-                // descriptor work done here, in this case duty cycle
+                // descriptor work done here, in this case body orientation
                 template <typename Indiv>
                 void _eval(Indiv & indiv)
                 {
@@ -156,7 +154,7 @@ FIT_MAP(FitAdapt)
                     else {
                         desc.resize(6);
                         std::vector<double> v;
-                        simu.get_descriptor<rhex_dart::descriptors::DutyCycle>(v);
+                        simu.get_descriptor<rhex_dart::descriptors::BodyOrientation>(v);
                         desc[0] = v[0];
                         desc[1] = v[1];
                         desc[2] = v[2];
