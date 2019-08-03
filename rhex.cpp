@@ -132,7 +132,9 @@ FIT_MAP(FitAdapt)
 
                     // launching the simulation
                     auto robot = global::global_robot->clone();
-                    using safe_t = boost::fusion::vector<rhex_dart::safety_measures::BodyColliding, rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
+                    using safe_t = boost::fusion::vector<rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
+                    using desc_t = boost::fusion::vector<rhex_dart::descriptors::DutyCycle>;
+
                     rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>> simu(_ctrl, robot);
                     simu.run(5); // increase time to obtain more stable gaits?
 
