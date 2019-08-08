@@ -135,7 +135,7 @@ FIT_MAP(FitAdapt)
                     using safe_t = boost::fusion::vector<rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
                     using desc_t = boost::fusion::vector<rhex_dart::descriptors::DutyCycle>;
 
-                    rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>> simu(_ctrl, robot);
+                    rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>, rhex_dart::desc<desc_t>> simu(_ctrl, robot);
                     simu.run(5); // increase time to obtain more stable gaits?
 
                     this->_value = simu.covered_distance();
