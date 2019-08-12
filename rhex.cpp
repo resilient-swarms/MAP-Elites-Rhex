@@ -132,8 +132,8 @@ FIT_MAP(FitAdapt)
 
                     // launching the simulation
                     auto robot = global::global_robot->clone();
-                    using safe_t = boost::fusion::vector<rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
-                    using desc_t = boost::fusion::vector<rhex_dart::descriptors::DutyCycle>;
+                    using safe_t = boost::fusion::vector<rhex_dart::safety_measures::BodyColliding, rhex_dart::safety_measures::MaxHeight, rhex_dart::safety_measures::TurnOver>;
+                    using desc_t = boost::fusion::vector<rhex_dart::descriptors::BodyOrientation>;
 
                     rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>, rhex_dart::desc<desc_t>> simu(_ctrl, robot);
                     simu.run(5); // increase time to obtain more stable gaits?
@@ -158,7 +158,7 @@ FIT_MAP(FitAdapt)
                     else {
                         desc.resize(6);
                         std::vector<double> v;
-                        simu.get_descriptor<rhex_dart::descriptors::DutyCycle>(v);
+                        simu.get_descriptor<rhex_dart::descriptors::BodyOrientation>(v);
                         desc[0] = v[0];
                         desc[1] = v[1];
                         desc[2] = v[2];
