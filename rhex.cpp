@@ -44,13 +44,14 @@ using namespace sferes::gen::evo_float;
 
 struct Params {
 
-    // grid properties
+    // grid properties, discretise 6 dimensions into 5 bins each
     struct ea {
         SFERES_CONST size_t behav_dim = 6;
         SFERES_ARRAY(size_t, behav_shape, 5, 5, 5, 5, 5, 5);
         SFERES_CONST float epsilon = 0.05;
     };
 
+    // our values for each gait parameter can take on any one of these
     struct sampled {
         SFERES_ARRAY(float, values, 0.00, 0.025, 0.05, 0.075, 0.10, 0.125, 0.15, 0.175,
                      0.20, 0.225, 0.25, 0.275, 0.30, 0.325, 0.35,
@@ -64,7 +65,7 @@ struct Params {
         SFERES_CONST bool ordered = false;
     };
 
-    // save map every 50
+    // save map every 50 iterations
     struct pop {
         SFERES_CONST unsigned size = 200;
         SFERES_CONST unsigned init_size = 200;
@@ -136,12 +137,13 @@ FIT_MAP(FitAdapt)
                     using desc_t = boost::fusion::vector<rhex_dart::descriptors::BodyOrientation>;
 
                     rhex_dart::RhexDARTSimu<rhex_dart::safety<safe_t>, rhex_dart::desc<desc_t>> simu(_ctrl, robot);
-                    simu.run(5); // increase time to obtain more stable gaits?
+                    simu.run(5); // run simulation for 5 seconds
 
                     this->_value = simu.covered_distance();
 
                     std::vector<float> desc;
 
+                    // these assume a behaviour descriptor of size 6.
                     if (this->_value < -1000) {
                         // this means that something bad happened in the simulation
                         // we kill this individual
@@ -182,7 +184,7 @@ int main(int argc, char** argv)
 #else
     typedef eval::Eval<Params> eval_t;
 #endif
-    typedef gen::Sampled<24, Params> gen_t;
+    typedef gen::Sampled<24, Params> gen_t; // 24 parameters for our controller
     typedef FitAdapt<Params> fit_t;
     typedef phen::Parameters<gen_t, fit_t, Params> phen_t;
 
