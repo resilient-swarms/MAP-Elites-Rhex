@@ -114,7 +114,7 @@ sudo apt-get install libtbb-dev
     - `./build/exp/MAP-Elites-Rhex/rhex_binary` for binary archives
 
 ## Aknowledgement
-[Roman Buckley MEng] For developing the Rhex skeleton, dart model, and controller. 
+[Roman Buckley MEng] for initial work on the Rhex skeleton, DART model, and controller. 
 
 ## LICENSE
 
