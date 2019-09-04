@@ -199,7 +199,7 @@ int main(int argc, char** argv)
     typedef ea::MapElites<phen_t, eval_t, stat_t, modifier_t, Params> ea_t;
 
     ea_t ea;
-    // initilisation of the simulation and the simulated robot
+    // initilisation of the simulation and the simulated robot, robot morphology currently set to raised.skel only
     init_simu(std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/SKEL/raised.skel", global::damages);
 
     run_ea(argc, argv, ea);
