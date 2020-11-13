@@ -26,6 +26,8 @@
 #define NO_PARALLEL
 #endif
 
+
+
 #define FRICTION 1.0
 
 //#define TAKE_COMPLEMENT // whether or not to test for generalisation to unseen world/damage conditions
@@ -33,7 +35,9 @@
 //#define PRINTING
 //#define CHECK_PARALLEL
 #ifndef TEST
-#define PARALLEL_RUN
+#if NUM_CORES > 1
+	#define PARALLEL_RUN
+#endif
 #endif
 
 #include <boost/random.hpp>
@@ -58,6 +62,8 @@
 #include <meta-cmaes/meta-CMAES.hpp>
 #include <meta-cmaes/stat_maps.hpp>
 #include <meta-cmaes/stat_pop.hpp>
+#include <meta-cmaes/params.hpp>
+#include <meta-cmaes/parameter_control.hpp>
 #elif CMAES_CHECK()
 #include <meta-cmaes/cmaescheck_fitness.hpp>
 #include <meta-cmaes/cmaes.hpp>
@@ -91,6 +97,7 @@ int main(int argc, char **argv)
 {
     std::srand(atoi(argv[1])); //use experiment number as seed for random generator. mostly for Eigen
     ea_t ea;
+    
 #ifdef PARALLEL_RUN
     sferes::eval::init_shared_mem();
 #endif
@@ -98,6 +105,8 @@ int main(int argc, char **argv)
 #if CMAES_CHECK()
     global::damage_index = atoi(argv[2]);
     std::cout << "will do damage " << global::damage_index << std::endl;
+#elif META()
+     param_ctrl = init_parameter_control<BottomParams,CMAESParams>(std::string(argv[2]));
 #endif
     // initialisation of the simulation and the simulated robot, robot morphology currently set to raised.skel only
     global::init_simu(std::string(argv[1]), std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/SKEL/raised.skel");

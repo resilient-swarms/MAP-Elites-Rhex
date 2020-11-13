@@ -83,6 +83,7 @@ def _build_evolution(bld):
 	if os.environ.get('BUILD_GRAPHIC',"False") == "True":
 		cxxflags+=["-DGRAPHIC"]
 		libs += 'DART_GRAPHIC'
+	cxxflags+=['-g']
 	if os.environ.get('BUILD_META',"False") == "True":
 		sferes.create_variants(bld,
 							source = 'rhex_metaCMAES.cpp',
