@@ -39,10 +39,9 @@ def check_rhex_dart(conf):
     libs_check = ['/usr/local/lib', '/usr/lib']
 
     # You can customize where you want to check
-    # e.g. here we search also in a folder defined by an environmental variable
-    if 'RESIBOTS_DIR' in os.environ:
-    	includes_check = [os.environ['RESIBOTS_DIR'] + '/include'] + includes_check
-    	libs_check = [os.environ['RESIBOTS_DIR'] + '/lib'] + libs_check
+    # e.g. here we search also in a folder defined by an environmental variables
+    includes_check = [os.environ['RESIBOTS_DIR'] + '/include'] 
+    libs_check = [os.environ['RESIBOTS_DIR'] + '/lib'] 
 
     if conf.options.rhex_dart:
     	includes_check = [conf.options.rhex_dart + '/include']
@@ -51,7 +50,7 @@ def check_rhex_dart(conf):
     try:
     	conf.start_msg('Checking for rhex_dart includes')
     	res = conf.find_file('rhex_dart/rhex.hpp', includes_check)
-    	res = res and conf.find_file('rhex_dart/rhex_control_roman.hpp', includes_check)
+    	#res = res and conf.find_file('rhex_dart/rhex_control_roman.hpp', includes_check)
     	res = res and conf.find_file('rhex_dart/rhex_control_hopf.hpp', includes_check)
     	res = res and conf.find_file('rhex_dart/rhex_control_cpg.hpp', includes_check)
     	res = res and conf.find_file('rhex_dart/rhex_dart_simu.hpp', includes_check)
