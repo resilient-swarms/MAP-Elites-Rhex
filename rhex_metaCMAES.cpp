@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     ea_t ea;
     
 #ifdef PARALLEL_RUN
-    sferes::eval::init_shared_mem();
+    sferes::eval::init_shared_mem<CSharedMem>();
 #endif
 
 #if CMAES_CHECK()
