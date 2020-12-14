@@ -100,7 +100,7 @@ void bottom_gen_t::mutate()
     if (BottomParams::sampled::ordered)
     {
         for (size_t i = 0; i < _data.size(); ++i)
-            if (misc::rand<float>() < param_ctrl->get_mutation_rate())
+            if (misc::rand<float>() < sferes::eval::param_ctrl->get_mutation_rate())
             {
                 if (misc::flip_coin())
                     _data[i] = std::max(0, (int)_data[i] - 1);
@@ -112,7 +112,7 @@ void bottom_gen_t::mutate()
     else
     {
         BOOST_FOREACH (size_t &v, _data)
-            if (misc::rand<float>() < param_ctrl->get_mutation_rate())
+            if (misc::rand<float>() < sferes::eval::param_ctrl->get_mutation_rate())
                 v = misc::rand<size_t>(0, BottomParams::sampled::values_size());
         _check_invariant();
     }
@@ -125,7 +125,9 @@ using namespace sferes;
 
 int main(int argc, char **argv)
 {
-    std::srand(atoi(argv[1])); //use experiment number as seed for random generator. mostly for Eigen
+    long seed = atoi(argv[1]);
+    std::srand(seed); //use experiment number as seed for random generator. mostly for Eigen
+    
     ea_t ea;
     
 #ifdef PARALLEL_RUN
@@ -136,7 +138,7 @@ int main(int argc, char **argv)
     global::damage_index = atoi(argv[2]);
     std::cout << "will do damage " << global::damage_index << std::endl;
 #elif META()
-     param_ctrl = init_parameter_control<phen_t,BottomParams,CMAESParams>(std::string(argv[2]));
+     sferes::eval::param_ctrl = init_parameter_control<sferes::eval::EvalStats,phen_t,BottomParams, CMAESParams>(seed,std::string(argv[2]));
 #endif
     // initialisation of the simulation and the simulated robot, robot morphology currently set to raised.skel only
     global::init_simu(std::string(argv[1]), std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/SKEL/raised.skel");
