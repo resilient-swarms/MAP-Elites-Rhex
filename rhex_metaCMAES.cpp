@@ -90,6 +90,14 @@ typedef sferes::ea::MapElites<phen_t, eval_t, stat_t, modifier_t, BottomParams> 
 #include <sferes/run.hpp>
 #if META()
 #include <meta-cmaes/top_typedefs.hpp>
+
+BOOST_CLASS_EXPORT_IMPLEMENT(MutationAnnealing)
+BOOST_CLASS_EXPORT_IMPLEMENT(EpochAnnealing)
+BOOST_CLASS_EXPORT_IMPLEMENT(MutationEndogenous)
+BOOST_CLASS_EXPORT_IMPLEMENT(EpochEndogenous)
+BOOST_CLASS_EXPORT_IMPLEMENT(RL)
+BOOST_CLASS_EXPORT_IMPLEMENT(RLController)
+
 #endif
 namespace sferes
 {
@@ -152,7 +160,7 @@ int main(int argc, char **argv)
     global::damage_index = atoi(argv[2]);
     std::cout << "will do damage " << global::damage_index << std::endl;
 #elif META()
-     sferes::eval::param_ctrl = init_parameter_control<sferes::eval::EvalStats,phen_t,BottomParams, CMAESParams>(seed,std::string(argv[2]));
+     sferes::eval::param_ctrl = init_parameter_control(seed,std::string(argv[2]));
 #endif
     // initialisation of the simulation and the simulated robot, robot morphology currently set to raised.skel only
     global::init_simu(std::string(argv[1]), std::string(std::getenv("RESIBOTS_DIR")) + "/share/rhex_models/SKEL/raised.skel");
